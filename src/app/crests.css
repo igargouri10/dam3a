@@ -1,0 +1,4 @@
+.crest{position:relative;flex:0 0 auto;overflow:hidden}
+.crest-logo{background:#fff!important;border:1px solid #e2e6e1;padding:4px;box-shadow:0 2px 8px rgba(19,43,37,.06)}
+.crest-image{object-fit:contain;padding:4px}
+.live-score>div{justify-items:center}

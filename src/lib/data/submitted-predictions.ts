@@ -1,0 +1,3 @@
+import"server-only";import{callRpc,getCurrentUser}from"@/lib/supabase/server";
+export type SeasonHistoryRow={predictionId:string;competition:string;predictionCode:string;selectedValue:unknown;status:string;points:number;updatedAt:string;lockAt:string|null};
+export async function getSeasonPredictionHistory(){if(!await getCurrentUser())return[]as SeasonHistoryRow[];try{const raw=await callRpc<any[]>("get_my_season_predictions",{});return raw.map(x=>({predictionId:x.prediction_id,competition:x.competition,predictionCode:x.prediction_code,selectedValue:x.selected_value,status:x.status,points:Number(x.points_awarded),updatedAt:x.updated_at,lockAt:x.lock_at}))}catch{return[]as SeasonHistoryRow[]}}

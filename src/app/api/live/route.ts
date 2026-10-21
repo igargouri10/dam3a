@@ -1,0 +1,1 @@
+import{NextResponse}from"next/server";import{getLiveSnapshots}from"@/lib/data/live";export async function GET(){const data=await getLiveSnapshots();return NextResponse.json({...data,refreshedAt:new Date().toISOString()},{headers:{"Cache-Control":"public, max-age=10, stale-while-revalidate=20"}})}

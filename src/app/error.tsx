@@ -1,0 +1,1 @@
+"use client";export default function ErrorPage({reset}:{error:Error&{digest?:string};reset:()=>void}){return <div className="empty error-state"><h2>That move didn’t come off</h2><p>Nothing was lost. Try the request again.</p><button className="save" onClick={reset}>Try again</button></div>}

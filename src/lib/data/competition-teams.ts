@@ -1,0 +1,3 @@
+import"server-only";import{callPublicRpc}from"@/lib/supabase/server";import type{CompetitionTheme}from"@/lib/competitions";import type{Team}from"@/types";
+type Row={provider_id:string;name:string;short_name:string|null;logo_url:string|null};
+export async function getCompetitionTeams(competition:CompetitionTheme):Promise<Team[]>{try{const rows=await callPublicRpc<Row[]>("get_competition_teams",{competition_provider_id:competition.providerId,competition_season:competition.seasonYear});return rows.map(row=>({id:row.provider_id,name:row.name,shortName:row.short_name??row.name.slice(0,3).toUpperCase(),color:"#16342b",...(row.logo_url?{logoUrl:row.logo_url}:{})}))}catch{return[]}}

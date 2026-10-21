@@ -1,0 +1,2 @@
+import Link from "next/link"; import { UserRound } from "lucide-react"; import { getCurrentUser } from "@/lib/supabase/server"; import { isSupabaseConfigured } from "@/lib/supabase/config";
+export async function AuthNav(){if(!isSupabaseConfigured())return <span className="demo-pill">Demo mode</span>;const user=await getCurrentUser();return user?<Link className="avatar"href="/profile"title="Profile and settings"aria-label="Profile and settings"><UserRound size={18}/></Link>:<Link className="sign-in-link" href="/auth/sign-in">Sign in</Link>}

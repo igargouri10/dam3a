@@ -1,0 +1,2 @@
+import { redirect } from "next/navigation"; import { AuthForm } from "@/components/AuthForm"; import { getCurrentUser } from "@/lib/supabase/server"; import { isSupabaseConfigured } from "@/lib/supabase/config";
+export default async function Page(){if(!isSupabaseConfigured())return <div className="auth-card"><h1>Demo mode</h1><p>Add Supabase values to <code>.env.local</code> to enable accounts.</p></div>;if(await getCurrentUser())redirect("/");return <AuthForm mode="sign-up"/>}

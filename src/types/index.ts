@@ -1,0 +1,13 @@
+export type MatchStatus = "SCHEDULED" | "LIVE" | "FINISHED";
+export type PredictionCode = "MATCH_WINNER" | "EXACT_SCORE" | "BOTH_TEAMS_SCORE" | "FIRST_SCORER" | "ANYTIME_SCORER" | "MOST_CORNERS" | "MOST_SHOTS_ON_TARGET" | "YELLOW_CARD";
+export type Team = { id: string; name: string; shortName: string; color: string; logoUrl?: string };
+export type Match = { id: string; competition: string; round: string; kickoffAt: string; status: MatchStatus; home: Team; away: Team; homeScore?: number; awayScore?: number; venue: string };
+export type PredictionType = { code: PredictionCode; name: string; prompt: string; points: number; answerType: "choice" | "score" | "player" };
+export type PredictionInput = { matchId: string; type: PredictionCode; value: string | { home: number; away: number } };
+export type FinalMatchData = { homeScore: number; awayScore: number; firstScorerId?: string; scorerIds: string[]; yellowCardPlayerIds: string[]; corners?: { home: number; away: number }; shotsOnTarget?: { home:number; away:number } };
+export type ProviderFixture = Match & { providerId: string; competitionProviderId: string; season: number };
+export type MatchEvent={teamId:string;playerId?:string;minute:number;extraMinute?:number;type:"GOAL"|"YELLOW_CARD"|"RED_CARD"|"OTHER";detail:string};
+export type TeamMatchStatistics={teamId:string;corners:number|null;shotsOnTarget:number|null};
+export type LineupPlayer={providerId:string;teamProviderId:string;name:string;position:string|null;starter:boolean};
+export type FantasyPosition="GK"|"DEF"|"MID"|"FWD";
+export type PlayerFixtureStatistics={providerPlayerId:string;teamProviderId:string;name:string;position:FantasyPosition;minutes:number;goals:number;assists:number;saves:number;yellowCards:number;redCards:number;rating:number|null;cleanSheet:boolean;manOfTheMatch:boolean;points:number};

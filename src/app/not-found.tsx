@@ -1,0 +1,1 @@
+import Link from"next/link";export default function NotFound(){return <div className="empty error-state"><h2>Match not found</h2><p>This page may have moved or the fixture is no longer available.</p><Link className="save" href="/">Back to matches</Link></div>}

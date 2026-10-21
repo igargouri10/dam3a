@@ -1,0 +1,11 @@
+.mobile-nav{display:none}
+@media(max-width:800px){
+ header{height:64px;padding:0 16px}.desktop-nav{display:none}
+ .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(6,1fr);bottom:0;left:0;right:0;margin:0;padding:7px 4px max(7px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 94%,transparent);border-top:1px solid var(--line);box-shadow:0 -8px 28px rgba(11,34,27,.08);backdrop-filter:blur(16px);z-index:50}
+ .mobile-nav a{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:10px;color:var(--muted);font-size:10px;font-weight:700;line-height:1}.mobile-nav a.active{color:var(--green);background:color-mix(in srgb,var(--green) 9%,transparent)}.mobile-nav span{white-space:nowrap}
+ .stage-strip{position:static;inset:auto;margin:0;padding:12px 16px;justify-content:flex-start;z-index:auto}
+ .brandmark{width:32px;height:32px}.avatar{width:36px;height:36px;margin-left:auto}.sign-in-link{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 17px;border-radius:10px;font-size:12px;box-shadow:0 5px 14px rgba(19,43,37,.16)}.demo-pill{margin-left:auto}
+ .section-head{align-items:flex-start;flex-direction:column;gap:6px}.section-head>span{max-width:100%}
+ .competition-page{margin:-34px -16px -104px}.competition-content{padding:12px 16px}
+ main{padding:34px 16px calc(104px + env(safe-area-inset-bottom))}footer{margin-bottom:74px;padding-left:16px;padding-right:16px;gap:20px}
+}
