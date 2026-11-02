@@ -5,3 +5,5 @@ coverage
 
 .vercel
 .env*.local
+
+tsconfig.tsbuildinfo

@@ -10,4 +10,4 @@ export type MatchEvent={teamId:string;playerId?:string;minute:number;extraMinute
 export type TeamMatchStatistics={teamId:string;corners:number|null;shotsOnTarget:number|null};
 export type LineupPlayer={providerId:string;teamProviderId:string;name:string;position:string|null;starter:boolean};
 export type FantasyPosition="GK"|"DEF"|"MID"|"FWD";
-export type PlayerFixtureStatistics={providerPlayerId:string;teamProviderId:string;name:string;position:FantasyPosition;minutes:number;goals:number;assists:number;saves:number;yellowCards:number;redCards:number;rating:number|null;cleanSheet:boolean;manOfTheMatch:boolean;points:number};
+export type PlayerFixtureStatistics={providerPlayerId:string;teamProviderId:string;name:string;position:FantasyPosition;minutes:number;goals:number;assists:number;saves:number;yellowCards:number;redCards:number;rating:number|null;cleanSheet:boolean;manOfTheMatch:boolean;points:number;shotsTotal:number;shotsOnTarget:number;passesTotal:number;keyPasses:number;passAccuracy:number|null;tackles:number;interceptions:number;duelsTotal:number;duelsWon:number;dribblesAttempted:number;dribblesSuccessful:number};

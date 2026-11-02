@@ -1,4 +1,4 @@
 "use client";
-import Link from"next/link";import{usePathname}from"next/navigation";import{House,Radio,Trophy,CalendarRange,ClipboardList,Shirt}from"lucide-react";
-const items=[{href:"/",label:"Matches",icon:House},{href:"/live",label:"Live",icon:Radio},{href:"/leaderboard",label:"Leaders",icon:Trophy},{href:"/fantasy",label:"Fantasy",icon:Shirt},{href:"/season-picks",label:"Season",icon:CalendarRange},{href:"/my-predictions",label:"My picks",icon:ClipboardList}];
+import Link from"next/link";import{usePathname}from"next/navigation";import{House,Radio,ChartNoAxesCombined,CalendarRange,ClipboardList,Shirt}from"lucide-react";
+const items=[{href:"/",label:"Home",icon:House},{href:"/analytics",label:"Analytics",icon:ChartNoAxesCombined},{href:"/live",label:"Live",icon:Radio},{href:"/fantasy",label:"Fantasy",icon:Shirt},{href:"/season-picks",label:"Season",icon:CalendarRange},{href:"/my-predictions",label:"My picks",icon:ClipboardList}];
 export function MobileNav(){const pathname=usePathname();return <nav className="mobile-nav"aria-label="Mobile navigation">{items.map(({href,label,icon:Icon})=>{const active=href==="/"?pathname===href:pathname.startsWith(href);return <Link href={href}className={active?"active":""}aria-current={active?"page":undefined}key={href}><Icon size={20}/><span>{label}</span></Link>})}</nav>}
