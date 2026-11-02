@@ -1,48 +1,68 @@
 # DAM3A
 
-A responsive football prediction MVP built from the project brief. It currently runs in demo mode, with a Supabase-ready schema and a deliberately isolated football-provider boundary.
+A football prediction web app. Players predict match outcomes and player events, build a fantasy squad, follow live matches, and compare results on leaderboards and an analytics page. Live: https://football-prediction-platform-live.vercel.app
+
+Stack: Next.js 16, React 19, TypeScript, Supabase (Auth and PostgreSQL), Zod, Vitest, deployed on Vercel. Match data comes from API-Football through one isolated provider layer, so the browser never calls it directly.
+
+## What it does
+
+- **Predictions:** six configurable question types per match, each with its own evaluator and explicit void and tie handling. Predictions lock at kickoff, enforced in both the server code and the database.
+- **Scoring:** completed matches are scored by an idempotent finalize step, so re-running it never double-counts points.
+- **Live match centre:** shared timelines and statistics with quota-aware polling.
+- **Season picks and fantasy:** season-long predictions, fantasy squads with a price catalog, transfer deadlines and automated scoring, and public fantasy teams.
+- **Competitions and analytics:** competition pages with team membership and official standings, plus a public analytics explorer for player and match statistics.
+- **Accounts:** email and password sign-in through Supabase Auth, HTTP-only session cookies, profiles, history and a private prediction library.
+
+When Supabase is not configured or has no fixtures yet, the app falls back to built-in demo matches so the interface can still be explored.
+
+## Pages and API routes
+
+Pages: dashboard, `matches/[id]`, `live`, `leaderboard`, `history`, `my-predictions`, `profile`, `season-picks`, `fantasy` (teams, prices), `competitions/[slug]`, `analytics`, `auth`.
+
+API routes under `src/app/api`: `predictions`, `season-predictions`, `profile`, `fantasy`, `live`, `analytics`, `health`, plus secured `sync`, `finalize` and `cron`.
 
 ## Run locally
 
 ```powershell
-cd C:\Users\igarg\Documents\Codex\2026-08-10\explore\outputs\football-prediction-platform
 npm.cmd install
+Copy-Item .env.example .env.local   # then fill in the values
 npm.cmd run dev
 ```
 
-Open `http://localhost:3000`. Run checks with `npm.cmd test` and `npm.cmd run build`.
+Open http://localhost:3000, and http://localhost:3000/api/health to see which services are configured. Run `npm.cmd test` for the tests and `npm.cmd run check` for tests plus a production build.
 
-## What works
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project, safe for the browser |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server only. Never expose it |
+| `API_FOOTBALL_KEY`, `API_FOOTBALL_BASE_URL` | Football data provider |
+| `SYNC_SECRET`, `CRON_SECRET` | Bearer secrets protecting the sync and cron routes |
 
-- Dashboard with upcoming and live match states
-- Responsive match prediction experience with six configurable question types
-- Email/password account creation and sign-in using Supabase Auth
-- Secure HTTP-only session cookies with refresh-token rotation
-- Persistent prediction upserts through one atomic PostgreSQL function
-- Prediction API validation plus server and database kickoff enforcement
-- Separate, testable evaluators with explicit void/tie handling
-- Leaderboard and history views
-- Provider interface and guarded API-Football client (normalization intentionally waits for a verified real response)
-- Validated API-Football fixture normalizer and secured Premier League sync endpoint
-- Final event/statistics normalization and idempotent completed-match scoring
-- Database-derived leaderboard, accuracy, and private prediction history
-- Database-driven fixture pages and match-specific lineup prediction options
-- Shared live match centre with quota-aware polling, timelines, and statistics
-- PostgreSQL schema, constraints, RLS policies, configurable points, and idempotent result keys
+Never commit real values. `.env.local` is git-ignored.
 
-## Connect real services
+## Database
 
-1. Create a Supabase project and run `supabase/migrations/001_initial.sql`, then `002_auth_and_prediction_rpc.sql`.
-2. Copy `.env.example` to `.env.local` and add credentials.
-3. Import fixtures and create `match_prediction_types` rows. Demo match IDs are sent as provider IDs, so imported records must use the corresponding provider ID or the UI must be switched to database fixtures.
-4. Run `003_sync_constraints.sql`, then set `API_FOOTBALL_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and a strong `SYNC_SECRET`.
-5. Sync a narrow date range with `POST /api/sync/fixtures?season=2026&from=2026-08-01&to=2026-08-31` and header `Authorization: Bearer <SYNC_SECRET>`. The league is fixed to API-Football Premier League ID 39 for V1.
-6. Run `004_results_and_scoring.sql`. Finalize a finished fixture with `POST /api/finalize/<provider-fixture-id>` using the same authorization header. Re-running it updates the same result rows and never duplicates points.
-7. Run `005_leaderboard_and_history.sql` to enable live leaderboard and authenticated history views.
-8. Run `006_fixtures_and_lineups.sql`. Sync lineups with `POST /api/sync/lineups/<provider-fixture-id>` using the sync authorization header.
-9. Run `007_live_match_experience.sql`. Call `POST /api/sync/live` once per minute while fixtures are active and `POST /api/sync/live/<provider-id>` for details. Browsers poll only `/api/live`.
-10. Run `008_release_hardening.sql`, configure the scheduled job, and follow `SETUP_CHECKLIST.md` for production acceptance.
+Run the files in `supabase/migrations` in numeric order, `001` to `026`, in the Supabase SQL Editor. They create the schema, row-level security policies, scoring and leaderboard functions, fixtures and lineups, the live match tables, fantasy squads and scoring, and the analytics and standings tables. Later files are written to be safe to run again.
 
-Own goals are excluded from player goalscorer questions. The first subsequent eligible scorer wins `FIRST_SCORER`; if there is none, that question is void. Missing paired provider statistics also void the affected category.
+## Data sync
 
-The UI never calls the football provider directly. Permanent scoring should only run against finalized normalized data.
+Vercel cron jobs, defined in `vercel.json`, call routes that require `Authorization: Bearer $CRON_SECRET`:
+
+| Route | Schedule (UTC) |
+|---|---|
+| `/api/cron/catalog` | daily 03:17 |
+| `/api/cron/matches` | daily 04:00 |
+| `/api/cron/analytics` | daily 04:30 |
+
+This is the Vercel Hobby fallback; upgrading the plan allows more frequent live updates. Optional provider calls stop when fewer than 150 daily API requests remain. Details are in [docs/AUTOMATED_DATA_SYNC.md](docs/AUTOMATED_DATA_SYNC.md), and the first-time setup order is in [SETUP_CHECKLIST.md](SETUP_CHECKLIST.md).
+
+## Tests and CI
+
+Eight Vitest files cover scoring, kickoff locking, provider normalizers, lineups, fantasy stats and prices, and competitions. GitHub Actions runs install, tests and a production build on every push.
+
+## Limitations
+
+- Live data depends on the provider's daily quota and on the cron frequency your Vercel plan allows.
+- Own goals are excluded from player goalscorer questions. If no eligible scorer exists, that question is void, as is a category with missing paired statistics.
+- Permanent scoring should run only against finalized, normalized data.
+- The package name is `kickoff-picks` and the setup checklist uses that name; the product name is DAM3A.
